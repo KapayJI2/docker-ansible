@@ -1,0 +1,24 @@
+worker_processes 2;
+
+#Устанавливаем количество подключений
+events { worker_connections 1024; }
+
+http {
+	server {
+		#слушаем 80 порт
+		listen 80;
+
+		#регистрируем имя домена
+		server_name image.local;
+
+		#правило, при котором подключения будут попадать на сервис app и порт 3000
+		location ~ (/uploads/|/upload) {
+			proxy_pass http://api:3000;
+		}
+		
+		#правило для всех остальных подключений
+		location ~ (/) {
+			proxy_pass http://app:80;
+		}
+	}
+}
